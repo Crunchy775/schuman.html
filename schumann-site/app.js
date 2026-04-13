@@ -8,21 +8,21 @@ const IMAGES = [
     loaderId: 'loader0',
     errId:    'err0',
     wrapId:   'wrap0',
-    url:      PROXY + 'sosrff.tsu.ru/new/shm.jpg',
+    url:      PROXY + 'url: 'https://images.weserv.nl/?url=sosrff.tsu.ru/new/shm.jpg',',
   },
   {
     imgId:    'img1',
     loaderId: 'loader1',
     errId:    'err1',
     wrapId:   'wrap1',
-    url:      PROXY + 'sosrff.tsu.ru/new/srf.jpg',
+    url:      PROXY + 'url: 'https://images.weserv.nl/?url=sosrff.tsu.ru/new/shm.jpg',',
   },
   {
     imgId:    'img2',
     loaderId: 'loader2',
     errId:    'err2',
     wrapId:   'wrap2',
-    url:      PROXY + 'sosrff.tsu.ru/new/sra.jpg',
+    url:      PROXY + 'url: 'https://images.weserv.nl/?url=sosrff.tsu.ru/new/shm.jpg',',
   },
 ];
 
