@@ -1,184 +1,127 @@
 /* ─── Schumann Resonance Live Monitor — app.js ─── */
 
-const PROXY = 'https://images.weserv.nl/?url=';
-
 const IMAGES = [
   {
-    imgId:    'img0',
+    imgId: 'img0',
     loaderId: 'loader0',
-    errId:    'err0',
-    wrapId:   'wrap0',
-    url:      PROXY + 'url: 'https://images.weserv.nl/?url=sosrff.tsu.ru/new/shm.jpg',',
+    errId: 'err0',
+    url: 'https://sosrff.tsu.ru/new/shm.jpg',
   },
   {
-    imgId:    'img1',
+    imgId: 'img1',
     loaderId: 'loader1',
-    errId:    'err1',
-    wrapId:   'wrap1',
-    url:      PROXY + 'url: 'https://images.weserv.nl/?url=sosrff.tsu.ru/new/shm.jpg',',
+    errId: 'err1',
+    url: 'https://sosrff.tsu.ru/new/srf.jpg',
   },
   {
-    imgId:    'img2',
+    imgId: 'img2',
     loaderId: 'loader2',
-    errId:    'err2',
-    wrapId:   'wrap2',
-    url:      PROXY + 'url: 'https://images.weserv.nl/?url=sosrff.tsu.ru/new/shm.jpg',',
+    errId: 'err2',
+    url: 'https://sosrff.tsu.ru/new/sra.jpg',
   },
 ];
 
-let loadedCount  = 0;
-let errorCount   = 0;
-let secondsLeft  = 15 * 60;
-let clockInterval;
-let countdownInterval;
+let loadedCount = 0;
+let errorCount = 0;
 
-/* ─── Load a single image ─── */
 function loadImage(item) {
-  const img     = document.getElementById(item.imgId);
-  const loader  = document.getElementById(item.loaderId);
-  const err     = document.getElementById(item.errId);
+  const img = document.getElementById(item.imgId);
+  const loader = document.getElementById(item.loaderId);
+  const err = document.getElementById(item.errId);
 
-  // Reset state
-  img.style.display    = 'none';
-  img.classList.remove('loaded');
-  err.style.display    = 'none';
+  if (!img || !loader || !err) return;
+
   loader.style.display = 'flex';
+  err.style.display = 'none';
+  img.style.display = 'none';
 
-  // Cache-bust: force browser to fetch latest version from Tomsk
-  const url = item.url + '&t=' + Date.now();
+  const url = item.url + '?t=' + Date.now();
 
-  const probe = new Image();
+  const testImg = new Image();
 
-  probe.onload = () => {
+  testImg.onload = () => {
     img.src = url;
     img.style.display = 'block';
     loader.style.display = 'none';
-    err.style.display    = 'none';
-    // Small delay so browser has painted the element before animating
-    requestAnimationFrame(() => img.classList.add('loaded'));
     loadedCount++;
     updateStatus();
   };
 
-  probe.onerror = () => {
+  testImg.onerror = () => {
     loader.style.display = 'none';
-    err.style.display    = 'flex';
+    err.style.display = 'flex';
     errorCount++;
     updateStatus();
   };
 
-  probe.src = url;
+  testImg.src = url;
 }
 
-/* ─── Refresh all images ─── */
 function refreshAll() {
   loadedCount = 0;
-  errorCount  = 0;
+  errorCount = 0;
 
-  // Animate refresh button
   const btn = document.getElementById('refresh-btn');
   if (btn) {
     btn.classList.add('spinning');
-    setTimeout(() => btn.classList.remove('spinning'), 1500);
+    setTimeout(() => btn.classList.remove('spinning'), 1200);
   }
 
-  // Update last-refresh display
-  const now = new Date();
-  const timeStr = now.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit', second: '2-digit' });
-  setEl('last-update', timeStr);
-
-  setStatus('loading', 'Fetching latest data from Tomsk...');
+  setStatus('loading', 'Loading Schumann Resonance data...');
 
   IMAGES.forEach(loadImage);
-  resetCountdown();
 }
 
-/* Expose globally so onclick in HTML works */
-window.refreshAll = refreshAll;
-
-/* ─── Status bar ─── */
-function setStatus(state, message) {
-  const dot  = document.getElementById('status-dot');
+/* status */
+function setStatus(state, msg) {
+  const dot = document.getElementById('status-dot');
   const text = document.getElementById('status-text');
   if (!dot || !text) return;
 
   dot.className = 'status-dot';
 
-  if (state === 'loading') {
-    dot.classList.add('status-loading');
-  } else if (state === 'ok') {
-    dot.classList.add('status-ok');
-  } else {
-    dot.classList.add('status-error');
-  }
+  if (state === 'loading') dot.classList.add('status-loading');
+  else if (state === 'ok') dot.classList.add('status-ok');
+  else dot.classList.add('status-error');
 
-  text.textContent = message;
+  text.textContent = msg;
 }
 
 function updateStatus() {
   const total = IMAGES.length;
-  const done  = loadedCount + errorCount;
+  const done = loadedCount + errorCount;
 
   if (done < total) {
-    setStatus('loading', `Loading charts... (${done}/${total})`);
+    setStatus('loading', `Loading... (${done}/${total})`);
     return;
   }
 
   if (errorCount === 0) {
-    setStatus('ok', `All ${total} charts loaded successfully. Data from Tomsk Space Observing System.`);
+    setStatus('ok', 'All charts loaded successfully');
   } else if (loadedCount === 0) {
-    setStatus('error', 'Could not reach Tomsk server — it may be temporarily down. Try refreshing in a few minutes.');
+    setStatus('error', 'Failed to load data source');
   } else {
-    setStatus('error', `${loadedCount} chart(s) loaded, ${errorCount} failed. Tomsk server may be partially unavailable.`);
+    setStatus('error', `${loadedCount}/${total} loaded`);
   }
 }
 
-/* ─── Tomsk Clock ─── */
-function getTomskTime() {
-  const now    = new Date();
-  const utcMs  = now.getTime() + now.getTimezoneOffset() * 60000;
-  return new Date(utcMs + 7 * 3600000); // UTC+7
-}
-
+/* clock */
 function updateClock() {
-  const t   = getTomskTime();
-  const h   = String(t.getHours()).padStart(2, '0');
-  const m   = String(t.getMinutes()).padStart(2, '0');
-  const s   = String(t.getSeconds()).padStart(2, '0');
-  setEl('tomsk-time', `${h}:${m}:${s}`);
+  const el = document.getElementById('tomsk-time');
+  if (!el) return;
+
+  const now = new Date();
+  const utc = now.getTime() + now.getTimezoneOffset() * 60000;
+  const tomsk = new Date(utc + 7 * 3600000);
+
+  el.textContent = tomsk.toTimeString().slice(0, 8);
 }
 
-/* ─── Countdown ─── */
-function resetCountdown() {
-  secondsLeft = 15 * 60;
-  renderCountdown();
-}
-
-function renderCountdown() {
-  const m = Math.floor(secondsLeft / 60);
-  const s = secondsLeft % 60;
-  setEl('next-refresh', `${String(m).padStart(2,'0')}:${String(s).padStart(2,'0')}`);
-}
-
-function tickCountdown() {
-  secondsLeft--;
-  if (secondsLeft <= 0) {
-    refreshAll();   // auto-refresh triggers reset inside
-    return;
-  }
-  renderCountdown();
-}
-
-/* ─── Utility ─── */
-function setEl(id, text) {
-  const el = document.getElementById(id);
-  if (el) el.textContent = text;
-}
-
-/* ─── Init ─── */
+/* init */
 document.addEventListener('DOMContentLoaded', () => {
   refreshAll();
   updateClock();
-  clockInterval     = setInterval(updateClock, 1000);
-  countdownInterval = setInterval(tickCountdown, 1000);
+  setInterval(updateClock, 1000);
 });
+
+window.refreshAll = refreshAll;
