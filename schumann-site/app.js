@@ -1,26 +1,28 @@
 /* ─── Schumann Resonance Live Monitor — app.js ─── */
 
+const PROXY = 'https://images.weserv.nl/?url=';
+
 const IMAGES = [
   {
     imgId:    'img0',
     loaderId: 'loader0',
     errId:    'err0',
     wrapId:   'wrap0',
-    url:      'http://sosrff.tsu.ru/new/shm.jpg',
+    url:      PROXY + 'sosrff.tsu.ru/new/shm.jpg',
   },
   {
     imgId:    'img1',
     loaderId: 'loader1',
     errId:    'err1',
     wrapId:   'wrap1',
-    url:      'http://sosrff.tsu.ru/new/srf.jpg',
+    url:      PROXY + 'sosrff.tsu.ru/new/srf.jpg',
   },
   {
     imgId:    'img2',
     loaderId: 'loader2',
     errId:    'err2',
     wrapId:   'wrap2',
-    url:      'http://sosrff.tsu.ru/new/sra.jpg',
+    url:      PROXY + 'sosrff.tsu.ru/new/sra.jpg',
   },
 ];
 
@@ -43,7 +45,7 @@ function loadImage(item) {
   loader.style.display = 'flex';
 
   // Cache-bust: force browser to fetch latest version from Tomsk
-  const url = item.url + '?t=' + Date.now();
+  const url = item.url + '&t=' + Date.now();
 
   const probe = new Image();
 
