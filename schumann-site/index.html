@@ -3,225 +3,52 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <meta name="description" content="Live Schumann Resonance data from the Space Observing System, Tomsk State University, Russia. Real-time ELF monitoring of Earth's electromagnetic heartbeat." />
-  <title>Schumann Resonance — Live Monitor</title>
+
+  <title>Schumann Resonance Live Monitor</title>
+
   <link rel="stylesheet" href="style.css" />
-  <link rel="preconnect" href="https://fonts.googleapis.com">
-  <link href="https://fonts.googleapis.com/css2?family=Space+Mono:ital,wght@0,400;0,700;1,400&family=Syne:wght@400;600;800&display=swap" rel="stylesheet">
 </head>
+
 <body>
 
-  <!-- Background pulse rings -->
-  <div class="bg-rings" aria-hidden="true">
-    <div class="ring ring-1"></div>
-    <div class="ring ring-2"></div>
-    <div class="ring ring-3"></div>
-    <div class="ring ring-4"></div>
-  </div>
-
-  <!-- Header -->
-  <header class="site-header">
-    <div class="header-inner">
-      <div class="logo-block">
-        <div class="logo-icon" aria-hidden="true">
-          <svg width="32" height="32" viewBox="0 0 32 32" fill="none">
-            <circle cx="16" cy="16" r="14" stroke="currentColor" stroke-width="1.5" stroke-dasharray="3 2"/>
-            <circle cx="16" cy="16" r="8" stroke="currentColor" stroke-width="1.5"/>
-            <circle cx="16" cy="16" r="3" fill="currentColor"/>
-          </svg>
-        </div>
-        <div>
-          <div class="logo-title">SCHUMANN RESONANCE</div>
-          <div class="logo-sub">Earth's Electromagnetic Heartbeat</div>
-        </div>
-      </div>
-      <div class="header-right">
-        <div class="live-pill">
-          <span class="pulse-dot"></span>
-          LIVE · <span id="tomsk-time">--:--</span> TLDV
-        </div>
-        <nav class="top-nav">
-          <a href="#charts" class="nav-link">Charts</a>
-          <a href="#about" class="nav-link">About</a>
-          <a href="http://sosrff.tsu.ru/" target="_blank" class="nav-link nav-external">Source ↗</a>
-        </nav>
-      </div>
+  <header>
+    <h1>Schumann Resonance Live Monitor</h1>
+    <div>
+      Live Time: <span id="tomsk-time">--:--:--</span>
     </div>
   </header>
 
-  <!-- Hero Stats Bar -->
-  <section class="stats-bar" aria-label="Key Schumann Resonance frequencies">
-    <div class="stats-inner">
-      <div class="stat">
-        <div class="stat-label">Fundamental</div>
-        <div class="stat-value">7.83 <span class="stat-unit">Hz</span></div>
-      </div>
-      <div class="stat-divider"></div>
-      <div class="stat">
-        <div class="stat-label">2nd Harmonic</div>
-        <div class="stat-value">14.3 <span class="stat-unit">Hz</span></div>
-      </div>
-      <div class="stat-divider"></div>
-      <div class="stat">
-        <div class="stat-label">3rd Harmonic</div>
-        <div class="stat-value">20.8 <span class="stat-unit">Hz</span></div>
-      </div>
-      <div class="stat-divider"></div>
-      <div class="stat">
-        <div class="stat-label">Station</div>
-        <div class="stat-value stat-text">Tomsk, RU</div>
-      </div>
-      <div class="stat-divider"></div>
-      <div class="stat">
-        <div class="stat-label">Last update</div>
-        <div class="stat-value stat-text" id="last-update">—</div>
-      </div>
-      <div class="stat-divider"></div>
-      <div class="stat">
-        <div class="stat-label">Next refresh</div>
-        <div class="stat-value stat-text" id="next-refresh">15:00</div>
-      </div>
+  <section>
+
+    <!-- Chart 1 -->
+    <div>
+      <div id="loader0">Loading...</div>
+      <img id="img0" alt="Schumann 1" />
+      <div id="err0">Failed to load</div>
     </div>
+
+    <!-- Chart 2 -->
+    <div>
+      <div id="loader1">Loading...</div>
+      <img id="img1" alt="Schumann 2" />
+      <div id="err1">Failed to load</div>
+    </div>
+
+    <!-- Chart 3 -->
+    <div>
+      <div id="loader2">Loading...</div>
+      <img id="img2" alt="Schumann 3" />
+      <div id="err2">Failed to load</div>
+    </div>
+
   </section>
 
-  <!-- Main Charts -->
-  <main id="charts" class="main-content">
-    <div class="section-header">
-      <h2 class="section-title">Live Data Feed</h2>
-      <p class="section-sub">Images sourced directly from <a href="http://sosrff.tsu.ru/" target="_blank">sosrff.tsu.ru</a> · Tomsk Space Observing System</p>
-      <button class="refresh-btn" onclick="refreshAll()" id="refresh-btn">
-        <span class="refresh-icon">↺</span> Refresh Now
-      </button>
-    </div>
+  <button id="refresh-btn" onclick="refreshAll()">Refresh</button>
 
-    <!-- Primary chart -->
-    <div class="chart-primary">
-      <div class="chart-card chart-card--large">
-        <div class="chart-card-header">
-          <div class="chart-card-label">SR Spectrogram — Power Spectral Density</div>
-          <div class="chart-card-tag">PRIMARY</div>
-        </div>
-        <div class="chart-img-wrap" id="wrap0">
-          <div class="chart-loader" id="loader0">
-            <div class="loader-ring"></div>
-            <span>Connecting to Tomsk...</span>
-          </div>
-          <img id="img0" class="chart-img" alt="Schumann Resonance spectrogram from Tomsk Space Observing System" />
-          <div class="chart-error" id="err0">
-            <div class="error-icon">⚡</div>
-            <div class="error-msg">Tomsk server temporarily unreachable</div>
-            <a href="http://sosrff.tsu.ru/new/shm.jpg" target="_blank" class="error-link">Try direct link ↗</a>
-          </div>
-        </div>
-        <div class="chart-caption">
-          Spectral peaks at Schumann resonance modes — driven by global lightning activity (~2,000 storms active at any moment)
-        </div>
-      </div>
-    </div>
-
-    <!-- Secondary charts grid -->
-    <div class="chart-grid">
-
-      <div class="chart-card">
-        <div class="chart-card-header">
-          <div class="chart-card-label">Magnetometer</div>
-          <div class="chart-card-tag">7.83 Hz</div>
-        </div>
-        <div class="chart-img-wrap" id="wrap1">
-          <div class="chart-loader" id="loader1">
-            <div class="loader-ring"></div>
-            <span>Loading...</span>
-          </div>
-          <img id="img1" class="chart-img" alt="SR magnetometer fundamental frequency" />
-          <div class="chart-error" id="err1">
-            <div class="error-icon">⚡</div>
-            <div class="error-msg">Unavailable</div>
-            <a href="http://sosrff.tsu.ru/new/srf.jpg" target="_blank" class="error-link">Direct ↗</a>
-          </div>
-        </div>
-        <div class="chart-caption">Fundamental frequency component (7.83 Hz)</div>
-      </div>
-
-      <div class="chart-card">
-        <div class="chart-card-header">
-          <div class="chart-card-label">Signal Amplitudes</div>
-          <div class="chart-card-tag">dB</div>
-        </div>
-        <div class="chart-img-wrap" id="wrap2">
-          <div class="chart-loader" id="loader2">
-            <div class="loader-ring"></div>
-            <span>Loading...</span>
-          </div>
-          <img id="img2" class="chart-img" alt="SR signal amplitudes" />
-          <div class="chart-error" id="err2">
-            <div class="error-icon">⚡</div>
-            <div class="error-msg">Unavailable</div>
-            <a href="http://sosrff.tsu.ru/new/sra.jpg" target="_blank" class="error-link">Direct ↗</a>
-          </div>
-        </div>
-        <div class="chart-caption">SR amplitude dependencies over local time</div>
-      </div>
-
-    </div>
-
-    <!-- Status bar -->
-    <div class="status-bar" id="status-bar">
-      <span class="status-dot status-loading" id="status-dot"></span>
-      <span id="status-text">Initializing...</span>
-    </div>
-  </main>
-
-  <!-- About Section -->
-  <section id="about" class="about-section">
-    <div class="about-inner">
-      <div class="about-text">
-        <h2 class="about-title">What is the Schumann Resonance?</h2>
-        <p>The Schumann resonance is a set of electromagnetic resonances in the cavity between Earth's surface and the ionosphere. Predicted by physicist Winfried Otto Schumann in 1952, these standing waves are excited by lightning discharges — over 2,000 active thunderstorms occur at any given moment around the planet.</p>
-        <p>The fundamental frequency sits at <strong>7.83 Hz</strong>, with harmonics at 14.3, 20.8, 27.3, and 33.8 Hz. These frequencies are used in atmospheric research, space weather monitoring, and geophysical studies.</p>
-        <div class="freq-pills">
-          <span class="freq-pill">7.83 Hz</span>
-          <span class="freq-pill">14.3 Hz</span>
-          <span class="freq-pill">20.8 Hz</span>
-          <span class="freq-pill">27.3 Hz</span>
-          <span class="freq-pill">33.8 Hz</span>
-        </div>
-      </div>
-      <div class="about-sources">
-        <h3 class="sources-title">Data Sources</h3>
-        <div class="source-card">
-          <div class="source-name">Space Observing System</div>
-          <div class="source-detail">Tomsk State University, Russia</div>
-          <a href="http://sosrff.tsu.ru/" target="_blank" class="source-link">sosrff.tsu.ru ↗</a>
-        </div>
-        <div class="source-card">
-          <div class="source-name">Direct Image Feeds</div>
-          <div class="source-detail">Raw JPG streams, updated every ~15 min</div>
-          <div class="source-urls">
-            <a href="https://sosrff.tsu.ru/new/shm.jpg" target="_blank">shm.jpg</a>
-            <a href="https://sosrff.tsu.ru/new/srf.jpg" target="_blank">srf.jpg</a>
-            <a href="https://sosrff.tsu.ru/new/sra.jpg" target="_blank">sra.jpg</a>
-          </div>
-        </div>
-        <div class="source-card">
-          <div class="source-name">Time Zone</div>
-          <div class="source-detail">Tomsk Local Daylight Time (TLDV = UTC+7)</div>
-        </div>
-      </div>
-    </div>
-  </section>
-
-  <footer class="site-footer">
-    <div class="footer-inner">
-      <div class="footer-left">
-        <div class="footer-logo">SCHUMANN RESONANCE MONITOR</div>
-        <div class="footer-sub">Live data from Tomsk Space Observing System</div>
-      </div>
-      <div class="footer-right">
-        <a href="http://sosrff.tsu.ru/" target="_blank">Data source ↗</a>
-        <a href="https://en.wikipedia.org/wiki/Schumann_resonances" target="_blank">Wikipedia ↗</a>
-      </div>
-    </div>
-  </footer>
+  <div id="status-bar">
+    <span id="status-dot"></span>
+    <span id="status-text">Initializing...</span>
+  </div>
 
   <script src="app.js"></script>
 </body>
